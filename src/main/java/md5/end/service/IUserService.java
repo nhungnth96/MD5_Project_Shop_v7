@@ -22,7 +22,7 @@ public interface IUserService {
 
     User save(RegisterForm registerDto) throws LoginException;
     void changeStatus(User user);
-//    void changePassword(Long userId,String oldPass,String newPass,String rePassword) throws BadRequestException;
+    void changePassword(Long userId,String oldPass,String newPass,String rePassword) throws BadRequestException;
 
     List<User> searchAllByFullNameContainingIgnoreCase(String fullName);
 }

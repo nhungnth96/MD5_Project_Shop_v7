@@ -114,18 +114,20 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
-//    @Override
-//    public void changePassword(Long userId,String oldPass,String newPass,String rePassword) throws BadRequestException {
-//        User user = userRepository.findById(userId).get();
-//        String userPassword = user.getPassword();
-//        if(!oldPass.equals(userPassword)){
-//            throw new BadRequestException("Old password is incorrect");
-//        } else if(newPass.equals(oldPass)){
-//            throw new BadRequestException("New password is the same old password.");
-//        } else if(!newPass.equals(rePassword)) {
-//            throw new BadRequestException("Re-password is not the same new password");
-//        }
-//        user.setPassword(newPass);
-//            userRepository.save(user);
-//        }
+    @Override
+    public void changePassword(Long userId,String oldPass,String newPass,String reNewPassword) throws BadRequestException {
+        User user = userRepository.findById(userId).get();
+        String userPassword = user.getPassword();
+
+        if(!(encoder.matches(oldPass,userPassword))){
+            throw new BadRequestException("Old password is incorrect");
+        } else if(newPass.equals(oldPass)){
+            throw new BadRequestException("New password is the same old password.");
+        } else if(!newPass.equals(reNewPassword)) {
+            throw new BadRequestException("Re-password is not the same new password");
+        }
+        user.setPassword(encoder.encode(newPass));
+
+            userRepository.save(user);
+        }
 }

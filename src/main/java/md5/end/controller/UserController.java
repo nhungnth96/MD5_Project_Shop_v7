@@ -66,10 +66,10 @@ public class UserController {
         return new ResponseEntity<>("Change status successfully.", HttpStatus.OK);
     }
 
-//    @PutMapping("/change-password")
-//    public ResponseEntity<String> changePassword(@Valid @RequestBody RePasswordRequest rePasswordRequest) throws BadRequestException {
-//        User user = userDetailService.getCurrentUser();
-//        userService.changePassword(user.getId(), rePasswordRequest.getOldPass(),rePasswordRequest.getNewPass(),rePasswordRequest.getRePass());
-//        return new ResponseEntity<>("Change password successfully",HttpStatus.OK);
-//    }
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody RePasswordRequest rePasswordRequest) throws BadRequestException {
+        User user = userDetailService.getCurrentUser();
+        userService.changePassword(user.getId(), rePasswordRequest.getOldPass(),rePasswordRequest.getNewPass(),rePasswordRequest.getReNewPass());
+        return new ResponseEntity<>("Change password successfully",HttpStatus.OK);
+    }
 }

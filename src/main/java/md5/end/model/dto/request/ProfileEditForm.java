@@ -15,6 +15,7 @@ import javax.validation.constraints.Pattern;
 public class ProfileEditForm {
     @NotEmpty(message = "Must be not empty.")
     private String fullName;
+
     private String birthday;
 
     @Pattern(regexp = "\\S+", message = "Containing whitespaces.")

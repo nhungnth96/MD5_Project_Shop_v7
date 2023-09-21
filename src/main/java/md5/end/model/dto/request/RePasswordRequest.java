@@ -25,6 +25,6 @@ public class RePasswordRequest {
     @Pattern(regexp = "\\S+", message = "Containing whitespaces")
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,12}$",message = "Password must be at least 6 characters, not over 12 characters. include 1 uppercase letter, 1 lowercase letter and 1 symbol character.")
 
-    private String rePass;
+    private String reNewPass;
 
 }
