@@ -55,7 +55,7 @@ public class User {
     @Column(columnDefinition = "timestamp", name = "updated_at")
     private String updatedAt;
 
-
+    private String avatar;
     private boolean status;
 
     @ManyToMany (fetch = FetchType.EAGER, cascade = CascadeType.ALL)

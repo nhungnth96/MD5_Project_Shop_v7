@@ -12,6 +12,7 @@ import md5.end.security.principal.UserDetailService;
 import md5.end.service.IProductService;
 import md5.end.service.impl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,29 +32,39 @@ public class ProductController {
     @Autowired
     private UserDetailService userDetailService;
 
-
     @GetMapping("")
-    public ResponseEntity<List<?>> getAll() {
-        User user = userDetailService.getCurrentUser();
-        if(user.getRoles().size()==1) {
-            return new ResponseEntity<>(productService.findShoppingForUser(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(productService.findAll(), HttpStatus.OK);
-        }
-
+    public ResponseEntity<Page<?>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        return new ResponseEntity<>(productService.findShoppingForUser(page,size), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/search-by-name")
+    public ResponseEntity<?> searchByName(
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) throws NotFoundException {
+        return new ResponseEntity<>(productService.findByName(name,page,size), HttpStatus.OK);
 
+    }
+    @GetMapping("/search-by-status")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<?> searchByStatus(
+            @RequestParam(defaultValue = "") int status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) throws NotFoundException {
+        return new ResponseEntity<>(productService.findByStatus(status,page,size), HttpStatus.OK);
+    }
+
+    // detail phân 2 dto
+    @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable Long id) throws NotFoundException {
         User user = userDetailService.getCurrentUser();
-        if(user.getRoles().size()==1) {
-            return new ResponseEntity<>(productService.findForUser(id), HttpStatus.OK);
-        } else {
+        if(user.getRoles().size()==3) {
             return new ResponseEntity<>(productService.findById(id), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(productService.findForUser(id), HttpStatus.OK);
         }
-
-
     }
 
     @PostMapping("")
@@ -83,6 +94,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}/upload-image")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<ProductResponse> uploadImage(@PathVariable Long productId, @RequestParam(value = "files") List<MultipartFile> files) throws NotFoundException {
         return new ResponseEntity<>(productService.insertImage(productId,files), HttpStatus.OK);
     }

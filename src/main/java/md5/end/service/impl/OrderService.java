@@ -6,6 +6,7 @@ import md5.end.model.dto.request.OrderRequest;
 import md5.end.model.dto.request.OrderStatusUpdate;
 import md5.end.model.dto.response.OrderDetailResponse;
 import md5.end.model.dto.response.OrderResponse;
+import md5.end.model.dto.response.ProductShopResponse;
 import md5.end.model.entity.order.*;
 import md5.end.model.entity.product.Product;
 import md5.end.model.entity.user.User;
@@ -17,6 +18,9 @@ import md5.end.service.IShippingService;
 import md5.end.service.IUserService;
 import md5.end.service.amapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -40,6 +44,38 @@ public class OrderService implements IOrderService {
         return orders.stream()
                 .map(order -> orderMapper.getResponseFromEntity(order))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<OrderResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Order> orderPage = orderRepository.findAll(pageable);
+        Page<OrderResponse> orderResponsePage = orderPage.map(order -> orderMapper.getResponseFromEntity(order));
+        return orderResponsePage;
+    }
+
+    @Override
+    public Page<OrderResponse> findByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Order> orderPage = orderRepository.findByUserId(userId,pageable);
+        Page<OrderResponse> orderResponsePage = orderPage.map(order -> orderMapper.getResponseFromEntity(order));
+        return orderResponsePage;
+    }
+
+    @Override
+    public Page<OrderResponse> findByDate(String date, int page, int size) throws NotFoundException {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Order> orderPage = orderRepository.findByOrderDate(date,pageable);
+        Page<OrderResponse> orderResponsePage = orderPage.map(order -> orderMapper.getResponseFromEntity(order));
+        return orderResponsePage;
+    }
+
+    @Override
+    public Page<OrderResponse> findByStatus(OrderStatus status, int page, int size) throws NotFoundException {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Order> orderPage = orderRepository.findByStatus(status,pageable);
+        Page<OrderResponse> orderResponsePage = orderPage.map(order -> orderMapper.getResponseFromEntity(order));
+        return orderResponsePage;
     }
 
     @Override

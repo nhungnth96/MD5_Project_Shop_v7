@@ -5,7 +5,11 @@ import md5.end.exception.BadRequestException;
 import md5.end.exception.NotFoundException;
 import md5.end.model.dto.request.ProfileEditForm;
 import md5.end.model.dto.request.RegisterForm;
+import md5.end.model.dto.response.ProductResponse;
 import md5.end.model.dto.response.ProfileResponse;
+import md5.end.model.dto.response.UserResponse;
+import md5.end.model.entity.product.Product;
+import md5.end.model.entity.product.ProductImage;
 import md5.end.model.entity.user.Role;
 import md5.end.model.entity.user.RoleName;
 import md5.end.model.entity.user.User;
@@ -14,6 +18,7 @@ import md5.end.security.principal.UserDetailService;
 import md5.end.service.IRoleService;
 import md5.end.service.IUserService;
 import md5.end.service.amapper.ProfileMapper;
+import md5.end.service.utils.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +26,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.security.auth.login.LoginException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -35,7 +42,8 @@ public class UserService implements IUserService {
     private IRoleService roleService;
     @Autowired
     private PasswordEncoder encoder;
-
+    @Autowired
+    FileService fileService;
     @Autowired
     private ProfileMapper profileMapper;
     @Override
@@ -44,8 +52,22 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<User> searchAllByFullNameContainingIgnoreCase(String name) {
-        return userRepository.searchAllByFullNameContainingIgnoreCase(name);
+    public Page<UserResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<User> userPage = userRepository.findAll(pageable);
+        Page<UserResponse> userResponsePage = userPage.map(user -> profileMapper.getResponseFromEntityForAdmin(user));
+        return userResponsePage;
+    }
+
+    @Override
+    public Page<UserResponse> findByFullNameContainingIgnoreCase(String name, int page, int size) throws NotFoundException {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<User> userPage = userRepository.findByFullNameContainingIgnoreCase(name,pageable);
+        Page<UserResponse> userResponsePage = userPage.map(user -> profileMapper.getResponseFromEntityForAdmin(user));
+        if(userResponsePage.isEmpty()){
+            throw new NotFoundException("No result found.");
+        }
+        return userResponsePage;
     }
 
     @Override
@@ -107,6 +129,30 @@ public class UserService implements IUserService {
                 .build());
     }
 
+    @Override
+    public User editProfile(Long userId, ProfileEditForm profileEditForm) {
+
+        User OldDataUser = userRepository.findById(userId).get();
+
+        User NewDataUser = User.builder()
+                .id(userId)
+                .username(OldDataUser.getUsername())
+                .password(OldDataUser.getPassword())
+                .email(OldDataUser.getEmail())
+                .createdAt(OldDataUser.getCreatedAt())
+                .updatedAt(LocalDateTime.now().toString())
+                .status(OldDataUser.isStatus())
+                .roles(OldDataUser.getRoles())
+                .cartItems(OldDataUser.getCartItems())
+                .orders(OldDataUser.getOrders())
+                .fullName(profileEditForm.getFullName() == null ? OldDataUser.getFullName() : profileEditForm.getFullName())
+                .birthday(profileEditForm.getBirthday() == null ? OldDataUser.getBirthday() : profileEditForm.getBirthday())
+                .tel(profileEditForm.getTel() == null ? OldDataUser.getTel() : profileEditForm.getTel())
+                .address(profileEditForm.getAddress() == null ? OldDataUser.getAddress() : profileEditForm.getAddress())
+                .avatar(profileEditForm.getAvatar() == null ? OldDataUser.getAvatar() : fileService.uploadFile(profileEditForm.getAvatar()))
+                .build();
+        return userRepository.save(NewDataUser);
+    }
 
     @Override
     public void changeStatus(User user) {
@@ -130,4 +176,5 @@ public class UserService implements IUserService {
 
             userRepository.save(user);
         }
+
 }

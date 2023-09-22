@@ -26,12 +26,12 @@ public class ProductRequest {
     private String description;
 
 //    @Min(value = 0, message = "Import price must be greater than 0")
-    private double importPrice;
+    private Double importPrice;
 //    @Min(value = 0, message = "Export price must be greater than 0")
-    private double exportPrice;
+    private Double exportPrice;
 //    @Min(value = 1, message = "Stock must be greater than 0")
-    private int stock;
-    private int status = 1;
+    private Integer stock;
+    private Integer status = 1;
 //    @NotNull(message = "Must be have a value")
     private Long brandId;
 //    @NotNull(message = "Must be have a value")

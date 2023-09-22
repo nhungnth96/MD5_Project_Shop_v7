@@ -55,12 +55,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable() // tắt cấu hình csrf
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
+                .antMatchers("/api/v1/products/**").permitAll() // CRUD admin
                 .antMatchers("/api/v1/brands/**").hasAnyRole("ADMIN")
                 .antMatchers("/api/v1/categories/**").hasAnyRole("ADMIN")
                 .antMatchers("/api/v1/specifications/**").hasAnyRole("ADMIN")
                 .antMatchers("/api/v1/users/**").hasAnyRole("ADMIN","SELLER","BUYER")
-                .antMatchers("/api/v1/products/**").hasAnyRole("ADMIN","SELLER","BUYER")
+
                 .antMatchers("/api/v1/cart/**").hasRole("BUYER")
+
                 .antMatchers("/api/v1/orders/**").hasAnyRole("ADMIN","SELLER","BUYER")
 
                 .anyRequest().authenticated()

@@ -4,6 +4,8 @@ import md5.end.model.entity.order.Order;
 import md5.end.model.entity.order.OrderStatus;
 import md5.end.model.entity.product.Product;
 import md5.end.model.entity.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,8 +18,18 @@ import java.util.Optional;
 public interface IOrderRepository extends JpaRepository<Order,Long> {
     @Query ("select o from Order o where o.id =?1 and o.user.id =?2")
     Optional<Order> findByIdAndUserId(Long orderId,Long userId);
+
     List<Order> findAllByUserId(Long id);
+
     Optional<Order> findByStatus(OrderStatus orderStatus);
-    Optional<Order> findByOrderDate(String String);
+
+    Optional<Order> findByOrderDate(String date);
+
+    Page<Order> findByOrderDate(String date, Pageable pageable);
+
+    Page<Order> findAll(Pageable pageable);
+    Page<Order> findByUserId(Long userId, Pageable pageable);
+
+    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
 
 }

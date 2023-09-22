@@ -20,7 +20,7 @@ public class JwtProvider {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername()) // set chủ đề
-                .setIssuedAt(new Date()) // thơ gian bắt đầu
+                .setIssuedAt(new Date()) // thơi gian bắt đầu
                 .setExpiration(new Date(new Date().getTime()+EXPIRATION_TOKEN)) // thời gian kết thúc
                 .signWith(SignatureAlgorithm.HS512,SECRET_KEY) // chữ ký vs thuật toán mã hóa, chuỗi bí mật
                 .compact();

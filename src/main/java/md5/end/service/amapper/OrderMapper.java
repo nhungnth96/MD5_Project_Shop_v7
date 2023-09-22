@@ -93,7 +93,7 @@ public class OrderMapper implements IGenericMapper<Order, OrderRequest, OrderRes
         orderResponse.setOrderId(order.getId());
         orderResponse.setBuyer(order.getUser().getFullName());
         orderResponse.setNote(order.getNote());
-        orderResponse.setTotal(NumberFormat.getInstance().format(order.getTotal()) + "$");
+        orderResponse.setTotal(NumberFormat.getInstance().format(order.getTotal()+order.getShipping().getPrice()) + "$");
         orderResponse.setOrderDate(order.getOrderDate());
         orderResponse.setStatus(order.getStatus().name());
         orderResponse.setPayment(order.getPayment().getType().toString());
@@ -109,8 +109,8 @@ public class OrderMapper implements IGenericMapper<Order, OrderRequest, OrderRes
         orderDetailResponse.setTel(order.getTel());
         orderDetailResponse.setNote(order.getNote());
         orderDetailResponse.setTotal(NumberFormat.getInstance().format(order.getTotal()) + "$");
-        orderDetailResponse.setShippingFee(NumberFormat.getInstance().format(order.getShipping().getType().getPrice()) + "₫");
-        orderDetailResponse.setSubTotal(NumberFormat.getInstance().format(order.getTotal()+order.getShipping().getType().getPrice()) + "₫");
+        orderDetailResponse.setShippingFee(NumberFormat.getInstance().format(order.getShipping().getType().getPrice()) + "$");
+        orderDetailResponse.setSubTotal(NumberFormat.getInstance().format(order.getTotal()+order.getShipping().getType().getPrice()) + "$");
         orderDetailResponse.setOrderDate(order.getOrderDate());
         orderDetailResponse.setStatus(order.getStatus().name());
         orderDetailResponse.setPayment(order.getPayment().getType().toString());

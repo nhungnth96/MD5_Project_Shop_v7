@@ -1,5 +1,6 @@
 package md5.end.repository;
 
+import md5.end.model.dto.response.UserResponse;
 import md5.end.model.entity.user.User;
 import org.hibernate.type.StringNVarcharType;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,7 @@ public interface IUserRepository extends JpaRepository<User,Long> {
     Optional<User> findByEmail (String email);
     Optional<User> findByTel (String tel);
 
-    List<User> searchAllByFullNameContainingIgnoreCase(String name);
 
-
+    Page<User> findByFullNameContainingIgnoreCase(String name,Pageable pageable);
+    Page<User> findAll(Pageable pageable);
 }
